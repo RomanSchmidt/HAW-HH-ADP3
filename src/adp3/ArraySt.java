@@ -24,6 +24,8 @@ class ArrayST<Key, Val> {
         }
         test.get(5);
         test.get(6);
+        test.get(6);
+        test.get(5);
         test.print();
         System.out.println("Schlüssel: " + test.keys());
         System.out.println("Laenge: " + test.size());
@@ -62,7 +64,7 @@ class ArrayST<Key, Val> {
         else if (contains(k)) {
             for (int i = 0; i < size; i++) {
                 if (k.equals(keys[i])) {
-                    rearrange(i);
+                    //rearrange(i);
                     values[0] = v;
                     break;
                 }
@@ -75,7 +77,7 @@ class ArrayST<Key, Val> {
                 resize(size * 2);
             values[size] = v;
             keys[size] = k;
-            rearrange(size);
+            //rearrange(size);
             size++;
         }
     }

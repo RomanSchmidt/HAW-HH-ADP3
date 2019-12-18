@@ -1,5 +1,6 @@
 package adp3;
 
+import edu.princeton.cs.algs4.BST;
 import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.StdOut;
 
@@ -19,6 +20,10 @@ public class Tree<Key extends Comparable<Key>, Value> {
         }
     }
 
+    public Tree(BST<Key, Value> bst) {
+        fillTree(bst);
+    }
+
     public static void main(String[] args) throws Exception {
         Tree<String, Integer> foo = new Tree<>("S", 5);
         foo.put("E", 5);
@@ -32,8 +37,10 @@ public class Tree<Key extends Comparable<Key>, Value> {
         foo.put("X", 0);
         System.out.println(foo);
 
-        foo.changeKey("M", "Ö");
-        System.out.println("ordered -> " + foo.isOrdered(foo.root, "C", "D"));
+        System.out.println("ordered -> " + foo.isOrdered(foo.root, "A", "Z"));
+        foo.changeKey("M", "Z");
+        System.out.println("ordered -> " + foo.isOrdered(foo.root, "A", "Z"));
+        System.out.println(foo);
     }
 
     private boolean isBST() {
@@ -286,9 +293,39 @@ public class Tree<Key extends Comparable<Key>, Value> {
         Key rootKey = root.key;
 
         if (rootKey.compareTo(min) >= 0 && rootKey.compareTo(max) <= 0) {
-            return isOrdered(root.left, min, max) && isOrdered(root.right, min, max);
+            return isOrdered(root.left, min, rootKey) && isOrdered(root.right, rootKey, max);
         }
         return false;
+    }
+
+    // extra methode zum füllen, damit ein rekursiver aufruf möglich wird
+    private void fillTree(BST<Key, Value> bst) {
+        boolean flag = true;
+        BST<Key, Value> temp1 = new BST<>();
+        BST<Key, Value> temp2 = new BST<>();
+        // aufteilen der elemente des BST in "gerade" und "ungerade" positionen
+        for (Key key : bst.keys(bst.min(), bst.max())) {
+            if (flag) {
+                temp1.put(key, bst.get(key));
+                flag = false;
+            } else {
+                temp2.put(key, bst.get(key));
+                flag = true;
+            }
+        }
+        // die zweite liste so lang rekursiv weiter in 2 hälften zerlegen, bis nur noch 1 element darin ist.
+        // dieses element bildet den root des neuen (balancierten!) trees
+        if (temp2.size() != 0) {
+            if (temp2.size() == 1) insertBST(temp2);
+            else fillTree(temp2);
+        }
+        insertBST(temp1);
+    }
+
+    private void insertBST(BST<Key, Value> bst) {
+        for (Key key : bst.keys(bst.min(), bst.max())) {
+            put(key, bst.get(key));
+        }
     }
 
     private class Node {
